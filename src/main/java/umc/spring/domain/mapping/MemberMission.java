@@ -29,4 +29,13 @@ public class MemberMission extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mission_id")
     private Mission mission;
+
+    @Override
+    public String toString() {
+        return "MemberMission [id=" + id
+                + ", status=" + status
+                + ", member=" + member
+                + ", mission=" + mission
+                + "]";
+    }
 }
