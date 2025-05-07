@@ -21,7 +21,7 @@ public class MissionQueryServiceImpl implements MissionQueryService {
         List<Mission> filteredMissions = missionRepository.findMissionsUnchallengedByMemberId(address, memberId, offset, limit);
 
         filteredMissions
-                .forEach(mission -> System.out.println("mission: " + mission));
+                .forEach(mission -> System.out.println("Mission: " + mission));
 
         return filteredMissions;
     }
