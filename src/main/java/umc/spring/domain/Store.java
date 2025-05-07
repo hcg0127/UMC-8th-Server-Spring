@@ -31,6 +31,8 @@ public class Store extends BaseEntity {
     @Column(nullable = false, columnDefinition = "VARCHAR(15) DEFAULT 'OPEN'")
     private StoreStatus status;
 
+    private Float score;
+
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
     private List<FoodCategory> foodCategoryList = new ArrayList<>();
 
@@ -39,4 +41,14 @@ public class Store extends BaseEntity {
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
     private List<Review> reviewList = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "Store [id=" + id
+                + ", name=" + name
+                + ", address=" + address
+                + ", status=" + status
+                + ", score=" + score
+                + "]";
+    }
 }
