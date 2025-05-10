@@ -1,9 +1,8 @@
-package umc.spring.service.MemberMissionService;
+package umc.spring.service.memberMissionService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import umc.spring.domain.Store;
 import umc.spring.domain.mapping.MemberMission;
 import umc.spring.repository.MemberMissionRepository.MemberMissionRepository;
 

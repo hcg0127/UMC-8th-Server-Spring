@@ -1,4 +1,4 @@
-package umc.spring.service.MissionService;
+package umc.spring.service.missionService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
