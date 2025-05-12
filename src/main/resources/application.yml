@@ -17,5 +17,9 @@ spring:
         hbm2ddl:
           auto: update
         default_batch_fetch_size: 1000
-logging.level:
-  org.hibernate.type: trace
+logging:
+  level:
+    org.hibernate.type: trace
+  discord:
+    webhook:
+      url: ${webhookend}

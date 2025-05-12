@@ -47,6 +47,9 @@ dependencies {
 
 	// error handler
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// feign client
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.2.1'
 }
 
 tasks.named('test') {

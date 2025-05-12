@@ -18,8 +18,14 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import umc.spring.apiPayload.ApiResponse;
 import umc.spring.apiPayload.code.ErrorReasonDTO;
 import umc.spring.apiPayload.code.status.ErrorStatus;
+import umc.spring.web.webhook.DiscordClient;
+import umc.spring.web.webhook.DiscordMessage;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -27,6 +33,12 @@ import java.util.Optional;
 @RestControllerAdvice(annotations = {RestController.class})
 public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
+
+    private final DiscordClient discordClient;
+
+    public ExceptionAdvice(DiscordClient discordClient) {
+        this.discordClient = discordClient;
+    }
 
     @org.springframework.web.bind.annotation.ExceptionHandler
     public ResponseEntity<Object> validation(ConstraintViolationException e, WebRequest request) {
@@ -57,6 +69,8 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler
     public ResponseEntity<Object> exception(Exception e, WebRequest request) {
         e.printStackTrace();
+
+        sendDiscordAlarm(e, request);
 
         return handleExceptionInternalFalse(e, ErrorStatus._INTERNAL_SERVER_ERROR, HttpHeaders.EMPTY, ErrorStatus._INTERNAL_SERVER_ERROR.getHttpStatus(),request, e.getMessage());
     }
@@ -117,5 +131,51 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
                 errorCommonStatus.getHttpStatus(),
                 request
         );
+    }
+
+    private void sendDiscordAlarm(Exception e, WebRequest request) {
+        discordClient.sendAlarm(createMessage(e, request));
+    }
+
+    private DiscordMessage createMessage(Exception e, WebRequest request) {
+        return DiscordMessage.builder()
+                .content("# 에러 발생")
+                .embeds(
+                        List.of(
+                                DiscordMessage.Embed.builder()
+                                        .title("에러 정보")
+                                        .description(
+                                                "### 발생 시간\n"
+                                                + LocalDateTime.now()
+                                                + "\n"
+                                                + "### 요청 URL\n"
+                                                + createRequestFullPath(request)
+                                                + "\n"
+                                                + "### Stack Trace\n"
+                                                + getStackTrace(e).substring(0, 1000)
+                                                + "\n```"
+                                        )
+                                        .build()
+                        )
+                )
+                .build();
+    }
+
+    private String createRequestFullPath(WebRequest webRequest) {
+        HttpServletRequest request = ((ServletWebRequest) webRequest).getRequest();
+        String fullPath = request.getMethod() + " " + request.getRequestURI();
+
+        String queryString = request.getQueryString();
+        if (queryString != null) {
+            fullPath += "?" + queryString;
+        }
+
+        return fullPath;
+    }
+
+    private String getStackTrace(Exception e) {
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        return sw.toString();
     }
 }
