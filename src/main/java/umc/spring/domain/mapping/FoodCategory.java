@@ -29,4 +29,15 @@ public class FoodCategory extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
     private Store store;
+
+    public void setMember(Member member) {
+        if (this.member != null)
+            member.getFoodCategoryList().remove(this);
+        this.member = member;
+        member.getFoodCategoryList().add(this);
+    }
+
+    public void setFood(Food food) {
+        this.food = food;
+    }
 }
