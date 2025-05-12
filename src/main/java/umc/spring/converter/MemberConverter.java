@@ -28,6 +28,7 @@ public class MemberConverter {
         return Member.builder()
                 .address(request.getAddress())
                 .gender(gender)
+                .phone(request.getPhoneNumber())
                 .name(request.getName())
                 .foodCategoryList(new ArrayList<>())
                 .build();
