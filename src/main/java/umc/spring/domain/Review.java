@@ -27,7 +27,7 @@ public class Review extends BaseEntity {
     @Column(nullable = false, length = 250)
     private String content;
 
-    @Column(nullable = false, length = 250)
+//    @Column(nullable = false, length = 250)
     private String comment;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -40,4 +40,18 @@ public class Review extends BaseEntity {
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
     private List<Image> imageList = new ArrayList<>();
+
+    public void setMember(Member member) {
+        if (this.member != null)
+            member.getReviewList().remove(this);
+        this.member = member;
+        member.getReviewList().add(this);
+    }
+
+    public void setStore(Store store) {
+        if (this.store != null)
+            store.getReviewList().remove(this);
+        this.store = store;
+        store.getReviewList().add(this);
+    }
 }
