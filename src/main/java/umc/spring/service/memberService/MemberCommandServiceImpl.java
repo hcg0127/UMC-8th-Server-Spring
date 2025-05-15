@@ -10,8 +10,8 @@ import umc.spring.converter.MemberConverter;
 import umc.spring.domain.Food;
 import umc.spring.domain.Member;
 import umc.spring.domain.mapping.FoodCategory;
-import umc.spring.repository.FoodRepository.FoodRepository;
-import umc.spring.repository.MemberRepository.MemberRepository;
+import umc.spring.repository.foodRepository.FoodRepository;
+import umc.spring.repository.memberRepository.MemberRepository;
 import umc.spring.web.dto.MemberRequestDTO;
 
 import java.util.List;

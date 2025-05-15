@@ -1,4 +1,4 @@
-package umc.spring.repository.MemberRepository;
+package umc.spring.repository.memberRepository;
 
 import umc.spring.domain.Member;
 

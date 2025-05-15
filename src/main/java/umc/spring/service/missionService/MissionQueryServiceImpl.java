@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import umc.spring.domain.Mission;
-import umc.spring.repository.MissionRepository.MissionRepository;
+import umc.spring.repository.missionRepository.MissionRepository;
 
 import java.util.List;
 

@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import umc.spring.converter.MissionConverter;
 import umc.spring.domain.Mission;
-import umc.spring.repository.MissionRepository.MissionRepository;
-import umc.spring.repository.StoreRepository.StoreRepository;
+import umc.spring.repository.missionRepository.MissionRepository;
+import umc.spring.repository.storeRepository.StoreRepository;
 import umc.spring.web.dto.MissionRequestDTO;
 
 @Service

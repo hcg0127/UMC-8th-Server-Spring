@@ -1,6 +1,5 @@
-package umc.spring.repository.MemberMissionRepository;
+package umc.spring.repository.memberMissionRepository;
 
-import umc.spring.domain.enums.MissionStatus;
 import umc.spring.domain.mapping.MemberMission;
 
 import java.util.List;

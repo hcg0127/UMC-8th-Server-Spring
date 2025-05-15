@@ -1,4 +1,4 @@
-package umc.spring.repository.StoreRepository;
+package umc.spring.repository.storeRepository;
 
 import umc.spring.domain.Store;
 
