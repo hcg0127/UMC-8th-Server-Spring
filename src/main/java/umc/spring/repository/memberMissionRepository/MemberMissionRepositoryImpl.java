@@ -41,4 +41,20 @@ public class MemberMissionRepositoryImpl implements MemberMissionRepositoryCusto
                 .fetch();
     }
 
+    @Override
+    public List<MemberMission> findOngoingMemberMissionByMissionId(Long missionId) {
+
+        BooleanBuilder predicate = new BooleanBuilder();
+
+        predicate.and(mm.member.id.eq(missionId));
+        predicate.and(mm.status.in(MissionStatus.ONGOING));
+
+        return jpaQueryFactory
+                .selectFrom(mm)
+                .join(m.store, s).fetchJoin()
+                .join(mm.mission, m).fetchJoin()
+                .where(predicate)
+                .orderBy(mm.createdAt.desc())
+                .fetch();
+    }
 }

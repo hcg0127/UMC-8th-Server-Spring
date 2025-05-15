@@ -17,4 +17,10 @@ public class MissionRequestDTO {
         @NotNull @Positive
         Integer point;
     }
+
+    @Getter
+    public static class MissionChallengeDTO {
+        @NotNull
+        Long status;
+    }
 }
