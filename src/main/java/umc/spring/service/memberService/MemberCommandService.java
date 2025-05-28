@@ -6,7 +6,7 @@ import umc.spring.web.dto.MemberRequestDTO;
 import umc.spring.web.dto.MissionRequestDTO;
 
 public interface MemberCommandService {
-    Member joinMember(MemberRequestDTO.JoinDTO request);
+    Member joinMember(MemberRequestDTO.JoinMemberDTO request);
 
     MemberMission challengeMission(Long memberId, Long missionId, MissionRequestDTO.MissionChallengeDTO request);
 }

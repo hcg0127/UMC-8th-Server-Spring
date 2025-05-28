@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class StoreConverter {
 
-    public static Store toStore(StoreRequestDTO.JoinDTO request) {
+    public static Store toStore(StoreRequestDTO.JoinStoreDTO request) {
         return Store.builder()
                 .name(request.getName())
                 .address(request.getAddress())
