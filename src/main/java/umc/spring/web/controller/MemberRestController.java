@@ -27,7 +27,7 @@ public class MemberRestController {
 
     @PostMapping
     @Operation(summary = "회원가입 API", description = "회원가입 API 입니다.")
-    public ApiResponse<MemberResponseDTO.JoinResultDTO> join(@RequestBody @Valid MemberRequestDTO.JoinDTO request) {
+    public ApiResponse<MemberResponseDTO.JoinResultDTO> joinMember(@RequestBody @Valid MemberRequestDTO.JoinMemberDTO request) {
         Member member = memberCommandService.joinMember(request);
         return ApiResponse.onSuccess(MemberConverter.toJoinResultDTO(member));
     }

@@ -38,7 +38,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
     @Override
     @Transactional
-    public Member joinMember(MemberRequestDTO.JoinDTO request) {
+    public Member joinMember(MemberRequestDTO.JoinMemberDTO request) {
 
         Member newMember = MemberConverter.toMember(request);
 

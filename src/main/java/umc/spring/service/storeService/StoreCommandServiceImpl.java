@@ -25,7 +25,7 @@ public class StoreCommandServiceImpl implements StoreCommandService {
 
     @Override
     @Transactional
-    public Store joinStore(StoreRequestDTO.JoinDTO request) {
+    public Store joinStore(StoreRequestDTO.JoinStoreDTO request) {
         Store newStore = StoreConverter.toStore(request);
         return storeRepository.save(newStore);
     }
