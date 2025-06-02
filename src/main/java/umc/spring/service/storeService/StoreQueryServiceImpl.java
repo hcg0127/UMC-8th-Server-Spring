@@ -37,10 +37,10 @@ public class StoreQueryServiceImpl implements StoreQueryService {
     }
 
     @Override
-    public Page<Review> getReviewList(Long storeId, Integer page) {
+    public Page<Review> getStoreReviewList(Long storeId, Integer page) {
         System.out.println("storeId = " + storeId);
-        Store store = storeRepository.findById(storeId).get();
+        Store store = storeRepository.findById(storeId).orElse(null);
 
-        return reviewRepository.findAllByStore(store, PageRequest.of(page, 10));
+        return reviewRepository.findAllByStore(store, PageRequest.of(page-1, 10));
     }
 }

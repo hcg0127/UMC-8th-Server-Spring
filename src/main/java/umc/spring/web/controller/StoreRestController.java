@@ -21,6 +21,7 @@ import umc.spring.domain.Store;
 import umc.spring.service.missionService.MissionCommandService;
 import umc.spring.service.storeService.StoreCommandService;
 import umc.spring.service.storeService.StoreQueryService;
+import umc.spring.validation.annotation.CheckPage;
 import umc.spring.validation.annotation.ExistMember;
 import umc.spring.validation.annotation.ExistStore;
 import umc.spring.web.dto.*;
@@ -71,12 +72,13 @@ public class StoreRestController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "STORE4001", description = "해당 가게가 없습니다.",content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
     @Parameters({
-            @Parameter(name = "storeId", description = "가게의 아이디, path variable 입니다!")
+            @Parameter(name = "storeId", description = "가게의 아이디, path variable 입니다!"),
+            @Parameter(name = "page", description = "페이지 번호, 1번이 1 페이지 입니다.")
     })
-    public ApiResponse<ReviewResponseDTO.ReviewPreViewListDTO> getReviewList(
+    public ApiResponse<ReviewResponseDTO.StoreReviewPreViewListDTO> getStoreReviewList(
             @ExistStore @PathVariable("storeId") Long storeId,
-            @RequestParam("page") Integer page) {
-        Page<Review> reviewList = storeQueryService.getReviewList(storeId, page);
-        return ApiResponse.onSuccess(ReviewConverter.reviewPreViewListDTO(reviewList));
+            @CheckPage @RequestParam("page") Integer page) {
+        Page<Review> reviewList = storeQueryService.getStoreReviewList(storeId, page);
+        return ApiResponse.onSuccess(ReviewConverter.storeReviewPreViewListDTO(reviewList));
     }
 }

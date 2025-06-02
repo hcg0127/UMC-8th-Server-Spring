@@ -21,13 +21,13 @@ public class ReviewResponseDTO {
         LocalDateTime createdAt;
     }
 
-    // 리뷰 목록 조회
+    // 가게 리뷰 목록 조회
     @Builder
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class ReviewPreViewListDTO {
-        List<ReviewPreViewDTO> reviewList;
+    public static class StoreReviewPreViewListDTO {
+        List<StoreReviewPreViewDTO> reviewList;
         Integer listSize;
         Integer totalPage;
         Long totalElements;
@@ -35,13 +35,40 @@ public class ReviewResponseDTO {
         Boolean isLast;
     }
 
-    // 리뷰 목록에 담길 리뷰 정보
+    // 가게 리뷰 목록에 담길 리뷰 정보
     @Builder
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class ReviewPreViewDTO {
+    public static class StoreReviewPreViewDTO {
         String ownerNickname;
+        Float score;
+        String body;
+        LocalDate createdAt;
+    }
+
+    // 특정 사용자 리뷰 목록 조회
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MyReviewPreViewListDTO {
+        List<MyReviewPreViewDTO> reviewList;
+        Integer listSize;
+        Integer totalPage;
+        Long totalElements;
+        Boolean isFirst;
+        Boolean isLast;
+    }
+
+    // 특정 사용자 리뷰 목록에 담길 리뷰 정보
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MyReviewPreViewDTO {
+        String ownerNickname;
+        String storeNickname;
         Float score;
         String body;
         LocalDate createdAt;
