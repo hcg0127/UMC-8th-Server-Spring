@@ -7,7 +7,6 @@ import umc.spring.web.dto.ReviewResponseDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ReviewConverter {
 
@@ -27,9 +26,9 @@ public class ReviewConverter {
                 .build();
     }
 
-    // 리뷰 정보
-    public static ReviewResponseDTO.ReviewPreViewDTO reviewPreViewDTO(Review review) {
-        return ReviewResponseDTO.ReviewPreViewDTO.builder()
+    // 가게 리뷰 정보
+    public static ReviewResponseDTO.StoreReviewPreViewDTO storeReviewPreViewDTO(Review review) {
+        return ReviewResponseDTO.StoreReviewPreViewDTO.builder()
                 .ownerNickname(review.getMember().getName())
                 .score(review.getStar())
                 .body(review.getContent())
@@ -37,18 +36,44 @@ public class ReviewConverter {
                 .build();
     }
 
-    // 리뷰 목록
-    public static ReviewResponseDTO.ReviewPreViewListDTO reviewPreViewListDTO(Page<Review> reviewList) {
-        List<ReviewResponseDTO.ReviewPreViewDTO> reviewPreViewDTOList = reviewList.stream()
-                .map(ReviewConverter::reviewPreViewDTO).toList();
+    // 가게 리뷰 목록
+    public static ReviewResponseDTO.StoreReviewPreViewListDTO storeReviewPreViewListDTO(Page<Review> reviewList) {
+        List<ReviewResponseDTO.StoreReviewPreViewDTO> storeReviewPreViewDTOList = reviewList.stream()
+                .map(ReviewConverter::storeReviewPreViewDTO).toList();
 
-        return ReviewResponseDTO.ReviewPreViewListDTO.builder()
+        return ReviewResponseDTO.StoreReviewPreViewListDTO.builder()
                 .isFirst(reviewList.isFirst())
                 .isLast(reviewList.isLast())
                 .totalPage(reviewList.getTotalPages())
                 .totalElements(reviewList.getTotalElements())
-                .listSize(reviewPreViewDTOList.size())
-                .reviewList(reviewPreViewDTOList)
+                .listSize(storeReviewPreViewDTOList.size())
+                .reviewList(storeReviewPreViewDTOList)
+                .build();
+    }
+
+    // 내 리뷰 정보
+    public static ReviewResponseDTO.MyReviewPreViewDTO myReviewPreViewDTO(Review review) {
+        return ReviewResponseDTO.MyReviewPreViewDTO.builder()
+                .ownerNickname(review.getMember().getName())
+                .storeNickname(review.getStore().getName())
+                .score(review.getStar())
+                .body(review.getContent())
+                .createdAt(review.getCreatedAt().toLocalDate())
+                .build();
+    }
+
+    // 내 리뷰 목록
+    public static ReviewResponseDTO.MyReviewPreViewListDTO myReviewPreViewListDTO(Page<Review> reviewList) {
+        List<ReviewResponseDTO.MyReviewPreViewDTO> myReviewPreViewDTOList = reviewList.stream()
+                .map(ReviewConverter::myReviewPreViewDTO).toList();
+
+        return ReviewResponseDTO.MyReviewPreViewListDTO.builder()
+                .isFirst(reviewList.isFirst())
+                .isLast(reviewList.isLast())
+                .totalPage(reviewList.getTotalPages())
+                .totalElements(reviewList.getTotalElements())
+                .listSize(myReviewPreViewDTOList.size())
+                .reviewList(myReviewPreViewDTOList)
                 .build();
     }
 }
