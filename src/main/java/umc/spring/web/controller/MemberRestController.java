@@ -55,7 +55,7 @@ public class MemberRestController {
     @Operation(summary = "내가 작성한 리뷰 조회 API", description = "내가 작성한 리뷰를 조회하는 API이며, 페이징을 포함합니다. queryString으로 page 번호와 사용자의 아이디를 주세요.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200",description = "OK, 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",content = @Content(schema = @Schema(implementation = ApiResponse.class))),
     })
     @Parameters({
             @Parameter(name = "memberId", description = "사용자의 아이디, path variable 입니다."),
@@ -66,5 +66,22 @@ public class MemberRestController {
             @CheckPage @RequestParam("page") Integer page) {
         Page<Review> reviewList = memberQueryService.getMyReviewList(memberId, page);
         return ApiResponse.onSuccess(ReviewConverter.myReviewPreViewListDTO(reviewList));
+    }
+
+    @GetMapping("/{memberId}/missions")
+    @Operation(summary = "내가 진행 중인 미션 목록 조회 API", description = "내가 진행 중인 미션 목록을 조회하는 API이며, 페이징을 포함합니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200",description = "OK, 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+    })
+    @Parameters({
+            @Parameter(name = "memberId", description = "사용자의 아이디, path variable 입니다."),
+            @Parameter(name = "page", description = "페이지 번호, 1번이 1 페이지 입니다.")
+    })
+    public ApiResponse<MissionResponseDTO.MyOngoingMissionListDTO> getMyOngoingMissionList(
+            @ExistMember @PathVariable("memberId") Long memberId,
+            @CheckPage @RequestParam("page") Integer page) {
+        Page<MemberMission> missionList = memberQueryService.getMyOngoingMissionList(memberId, page);
+        return ApiResponse.onSuccess(MissionConverter.myOngoingMissionListDTO(missionList));
     }
 }

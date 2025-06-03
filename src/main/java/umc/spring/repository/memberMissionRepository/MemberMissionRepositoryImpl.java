@@ -32,8 +32,8 @@ public class MemberMissionRepositoryImpl implements MemberMissionRepositoryCusto
 
         return jpaQueryFactory
                 .selectFrom(mm)
-                .join(m.store, s).fetchJoin()
-                .join(mm.mission, m).fetchJoin()
+                .join(m.store, s)
+                .join(mm.mission, m)
                 .where(predicate)
                 .orderBy(mm.createdAt.desc())
                 .offset(offset)
@@ -46,13 +46,13 @@ public class MemberMissionRepositoryImpl implements MemberMissionRepositoryCusto
 
         BooleanBuilder predicate = new BooleanBuilder();
 
-        predicate.and(mm.member.id.eq(missionId));
+        predicate.and(mm.mission.id.eq(missionId));
         predicate.and(mm.status.in(MissionStatus.ONGOING));
 
         return jpaQueryFactory
                 .selectFrom(mm)
-                .join(m.store, s).fetchJoin()
-                .join(mm.mission, m).fetchJoin()
+                .join(m.store, s)
+                .join(mm.mission, m)
                 .where(predicate)
                 .orderBy(mm.createdAt.desc())
                 .fetch();
