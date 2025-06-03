@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import umc.spring.apiPayload.ApiResponse;
 import umc.spring.converter.MemberConverter;
@@ -43,11 +44,14 @@ public class MemberRestController {
 
     @PostMapping("/{memberId}/missions/{missionId}/challenge")
     @Operation(summary = "미션 도전 API", description = "미션 도전하기 API 입니다.")
+    @Parameters({
+            @Parameter(name = "memberId", description = "사용자의 아이디, path variable 입니다."),
+            @Parameter(name = "missionId", description = "도전할 미션의 아이디입니다.")
+    })
     public ApiResponse<MissionResponseDTO.MissionChallengeResultDTO> missionChallenge(
-            @Valid @RequestBody MissionRequestDTO.MissionChallengeDTO request,
             @ExistMember @PathVariable("memberId") Long memberId,
             @NotOngoingMission @ExistMission @PathVariable("missionId") Long missionId) {
-        MemberMission newMemberMission = memberCommandService.challengeMission(memberId, missionId, request);
+        MemberMission newMemberMission = memberCommandService.challengeMission(memberId, missionId);
         return ApiResponse.onSuccess(MissionConverter.toChallengeResultDTO(newMemberMission));
     }
 
@@ -83,5 +87,18 @@ public class MemberRestController {
             @CheckPage @RequestParam("page") Integer page) {
         Page<MemberMission> missionList = memberQueryService.getMyOngoingMissionList(memberId, page);
         return ApiResponse.onSuccess(MissionConverter.myOngoingMissionListDTO(missionList));
+    }
+
+    @PatchMapping("/{memberId}/missions/{missionId}/complete")
+    @Operation(summary = "미션 완료 API", description = "미션 완료하기 API입니다.")
+    @Parameters({
+            @Parameter(name = "memberId", description = "사용자의 아이디, path variable 입니다."),
+            @Parameter(name = "missionId", description = "완료할 미션의 아이디입니다.")
+    })
+    public ApiResponse<String> missionComplete(
+            @ExistMember @PathVariable("memberId") Long memberId,
+            @ExistMission @PathVariable("missionId") Long missionId) {
+        memberCommandService.completeMission(memberId, missionId);
+        return ApiResponse.onSuccess(HttpStatus.OK.toString());
     }
 }

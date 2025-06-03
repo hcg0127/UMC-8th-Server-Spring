@@ -33,9 +33,10 @@ public enum ErrorStatus implements BaseErrorCode {
     // 가게
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "STORE4001", "해당 가게가 없습니다."),
 
-    // 리뷰
+    // 미션
     MISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "MISSION4001", "해당 미션이 없습니다."),
     MISSION_ONGOING(HttpStatus.BAD_REQUEST, "MISSION4002", "이미 도전 중인 미션입니다."),
+    MISSION_NOT_ONGOING(HttpStatus.BAD_REQUEST,"MISSION4003", "진행 중인 미션이 아닙니다."),
 
     // 페이지
     PAGE_NOT_NEGATIVE(HttpStatus.BAD_REQUEST, "PAGE4001", "페이지는 1 이상의 값을 입력해야 합니다."),

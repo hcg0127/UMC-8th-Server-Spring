@@ -5,12 +5,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import umc.spring.apiPayload.code.status.ErrorStatus;
 import umc.spring.apiPayload.exception.handler.FoodHandler;
+import umc.spring.apiPayload.exception.handler.TempHandler;
 import umc.spring.converter.FoodCategoryConverter;
 import umc.spring.converter.MemberConverter;
-import umc.spring.converter.MissionConverter;
 import umc.spring.domain.Food;
 import umc.spring.domain.Member;
 import umc.spring.domain.Mission;
+import umc.spring.domain.enums.MissionStatus;
 import umc.spring.domain.mapping.FoodCategory;
 import umc.spring.domain.mapping.MemberMission;
 import umc.spring.repository.foodRepository.FoodRepository;
@@ -18,7 +19,6 @@ import umc.spring.repository.memberMissionRepository.MemberMissionRepository;
 import umc.spring.repository.memberRepository.MemberRepository;
 import umc.spring.repository.missionRepository.MissionRepository;
 import umc.spring.web.dto.MemberRequestDTO;
-import umc.spring.web.dto.MissionRequestDTO;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,16 +56,31 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
     @Override
     @Transactional
-    public MemberMission challengeMission(Long memberId, Long missionId, MissionRequestDTO.MissionChallengeDTO request) {
+    public MemberMission challengeMission(Long memberId, Long missionId) {
 
         Mission mission = missionRepository.findById(missionId).orElse(null);
         Member member = memberRepository.findById(memberId).orElse(null);
 
-        MemberMission newMemberMission = MissionConverter.toMemberMission(request);
-
+        MemberMission newMemberMission = MemberMission.builder()
+                .status(MissionStatus.ONGOING)
+                .build();
         newMemberMission.setMember(member);
         newMemberMission.setMission(mission);
 
         return memberMissionRepository.save(newMemberMission);
+    }
+
+    @Override
+    @Transactional
+    public void completeMission(Long memberId, Long missionId) {
+
+        Mission mission = missionRepository.findById(missionId).orElse(null);
+        Member member = memberRepository.findById(memberId).orElse(null);
+
+        MemberMission memberMission = memberMissionRepository.findByMemberAndMission(member,mission);
+        if (memberMission == null) {
+            throw new TempHandler(ErrorStatus.MISSION_NOT_ONGOING);
+        }
+        memberMission.missionComplete(MissionStatus.COMPLETED);
     }
 }
