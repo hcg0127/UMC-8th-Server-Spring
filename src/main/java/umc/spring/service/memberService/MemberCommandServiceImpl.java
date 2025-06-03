@@ -55,10 +55,11 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     }
 
     @Override
+    @Transactional
     public MemberMission challengeMission(Long memberId, Long missionId, MissionRequestDTO.MissionChallengeDTO request) {
 
-        Mission mission = missionRepository.findById(missionId).get();
-        Member member = memberRepository.findById(memberId).get();
+        Mission mission = missionRepository.findById(missionId).orElse(null);
+        Member member = memberRepository.findById(memberId).orElse(null);
 
         MemberMission newMemberMission = MissionConverter.toMemberMission(request);
 

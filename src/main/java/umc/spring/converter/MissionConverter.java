@@ -1,5 +1,6 @@
 package umc.spring.converter;
 
+import org.springframework.data.domain.Page;
 import umc.spring.domain.Mission;
 import umc.spring.domain.enums.MissionStatus;
 import umc.spring.domain.mapping.MemberMission;
@@ -7,6 +8,7 @@ import umc.spring.web.dto.MissionRequestDTO;
 import umc.spring.web.dto.MissionResponseDTO;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class MissionConverter {
 
@@ -35,6 +37,32 @@ public class MissionConverter {
         return MissionResponseDTO.MissionChallengeResultDTO.builder()
                 .missionId(memberMission.getId())
                 .createdAt(LocalDateTime.now())
+                .build();
+    }
+
+    // 내 진행 미션 정보
+    public static MissionResponseDTO.MyOngoingMissionDTO myOngoingMissionDTO(MemberMission memberMission) {
+        return MissionResponseDTO.MyOngoingMissionDTO.builder()
+                .storeNickname(memberMission.getMission().getStore().getName())
+                .missionStatus(MissionStatus.ONGOING.toString())
+                .point(memberMission.getMission().getPoint())
+                .price(memberMission.getMission().getPrice())
+                .build();
+    }
+
+
+    // 내 진행 미션 목록
+    public static MissionResponseDTO.MyOngoingMissionListDTO myOngoingMissionListDTO(Page<MemberMission> missionList) {
+        List<MissionResponseDTO.MyOngoingMissionDTO> myOngoingMissionDTOList = missionList.stream()
+                .map(MissionConverter::myOngoingMissionDTO).toList();
+
+        return MissionResponseDTO.MyOngoingMissionListDTO.builder()
+                .isFirst(missionList.isFirst())
+                .isLast(missionList.isLast())
+                .totalPage(missionList.getTotalPages())
+                .totalElements(missionList.getTotalElements())
+                .listSize(myOngoingMissionDTOList.size())
+                .missionList(myOngoingMissionDTOList)
                 .build();
     }
 }
