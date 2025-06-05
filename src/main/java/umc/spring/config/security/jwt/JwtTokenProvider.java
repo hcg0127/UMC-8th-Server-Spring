@@ -38,7 +38,7 @@ public class JwtTokenProvider {
                 .setSubject(email)
                 .claim("role", authentication.getAuthorities().iterator().next().getAuthority())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getExpiration().getAccess()))
+                .setExpiration(new Date(System.currentTimeMillis() + 14400000L))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -77,9 +77,9 @@ public class JwtTokenProvider {
         return null;
     }
 
-    public Authentication extractAuthentication(HttpServletRequest request) {
+    public Authentication extractAuthentication(HttpServletRequest request){
         String accessToken = resolveToken(request);
-        if (accessToken != null || !validateToken(accessToken)) {
+        if(accessToken == null || !validateToken(accessToken)) {
             throw new TempHandler(ErrorStatus.INVALID_TOKEN);
         }
         return getAuthentication(accessToken);

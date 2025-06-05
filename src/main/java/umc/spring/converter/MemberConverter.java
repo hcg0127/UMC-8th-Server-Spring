@@ -45,4 +45,12 @@ public class MemberConverter {
                 .accessToken(accessToken)
                 .build();
     }
+
+    public static MemberResponseDTO.MemberInfoDTO toMemberInfoDTO(Member member) {
+        return MemberResponseDTO.MemberInfoDTO.builder()
+                .name(member.getName())
+                .email(member.getEmail())
+                .gender(member.getGender().name())
+                .build();
+    }
 }
