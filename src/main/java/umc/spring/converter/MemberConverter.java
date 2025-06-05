@@ -38,4 +38,11 @@ public class MemberConverter {
                 .foodCategoryList(new ArrayList<>())
                 .build();
     }
+
+    public static MemberResponseDTO.LoginResultDTO toLoginResultDTO(Long id, String accessToken) {
+        return MemberResponseDTO.LoginResultDTO.builder()
+                .memberId(id)
+                .accessToken(accessToken)
+                .build();
+    }
 }

@@ -1,12 +1,15 @@
 package umc.spring.service.memberService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import umc.spring.apiPayload.code.status.ErrorStatus;
 import umc.spring.apiPayload.exception.handler.FoodHandler;
 import umc.spring.apiPayload.exception.handler.TempHandler;
+import umc.spring.config.security.jwt.JwtTokenProvider;
 import umc.spring.converter.FoodCategoryConverter;
 import umc.spring.converter.MemberConverter;
 import umc.spring.domain.Food;
@@ -20,7 +23,9 @@ import umc.spring.repository.memberMissionRepository.MemberMissionRepository;
 import umc.spring.repository.memberRepository.MemberRepository;
 import umc.spring.repository.missionRepository.MissionRepository;
 import umc.spring.web.dto.MemberRequestDTO;
+import umc.spring.web.dto.MemberResponseDTO;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,6 +43,8 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     private final MissionRepository missionRepository;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     @Transactional
@@ -86,5 +93,24 @@ public class MemberCommandServiceImpl implements MemberCommandService {
             throw new TempHandler(ErrorStatus.MISSION_NOT_ONGOING);
         }
         memberMission.missionComplete(MissionStatus.COMPLETED);
+    }
+
+    @Override
+    public MemberResponseDTO.LoginResultDTO loginMember(MemberRequestDTO.LoginRequestDTO request) {
+        Member member = memberRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new TempHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+            throw new TempHandler(ErrorStatus.INVALID_PASSWORD);
+        }
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                member.getEmail(), null,
+                Collections.singleton(() -> member.getRole().name())
+        );
+
+        String accessToken = jwtTokenProvider.generateToken(authentication);
+
+        return MemberConverter.toLoginResultDTO(member.getId(), accessToken);
     }
 }

@@ -101,4 +101,10 @@ public class MemberRestController {
         memberCommandService.completeMission(memberId, missionId);
         return ApiResponse.onSuccess(HttpStatus.OK.toString());
     }
+
+    @PostMapping("/login")
+    @Operation(summary = "유저 로그인 API", description = "유저가 로그인하는 API입니다.")
+    public ApiResponse<MemberResponseDTO.LoginResultDTO> login(@RequestBody @Valid MemberRequestDTO.LoginRequestDTO request) {
+        return ApiResponse.onSuccess(memberCommandService.loginMember(request));
+    }
 }
