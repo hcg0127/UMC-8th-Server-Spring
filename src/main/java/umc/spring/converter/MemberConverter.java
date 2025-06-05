@@ -5,6 +5,7 @@ import umc.spring.domain.enums.Gender;
 import umc.spring.web.dto.MemberRequestDTO;
 import umc.spring.web.dto.MemberResponseDTO;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -28,8 +29,12 @@ public class MemberConverter {
         return Member.builder()
                 .address(request.getAddress())
                 .gender(gender)
-                .phone(request.getPhoneNumber())
+                .phoneNumber(request.getPhoneNumber())
                 .name(request.getName())
+                .email(request.getEmail())
+                .password(request.getPassword())
+                .role(request.getRole())
+                .birth(LocalDate.of(request.getBirthYear(),request.getBirthMonth(), request.getBirthDay()).atStartOfDay())
                 .foodCategoryList(new ArrayList<>())
                 .build();
     }
