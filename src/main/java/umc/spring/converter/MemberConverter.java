@@ -38,4 +38,19 @@ public class MemberConverter {
                 .foodCategoryList(new ArrayList<>())
                 .build();
     }
+
+    public static MemberResponseDTO.LoginResultDTO toLoginResultDTO(Long id, String accessToken) {
+        return MemberResponseDTO.LoginResultDTO.builder()
+                .memberId(id)
+                .accessToken(accessToken)
+                .build();
+    }
+
+    public static MemberResponseDTO.MemberInfoDTO toMemberInfoDTO(Member member) {
+        return MemberResponseDTO.MemberInfoDTO.builder()
+                .name(member.getName())
+                .email(member.getEmail())
+                .gender(member.getGender().name())
+                .build();
+    }
 }
