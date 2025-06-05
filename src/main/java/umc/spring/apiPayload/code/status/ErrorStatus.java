@@ -40,6 +40,9 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 페이지
     PAGE_NOT_NEGATIVE(HttpStatus.BAD_REQUEST, "PAGE4001", "페이지는 1 이상의 값을 입력해야 합니다."),
+
+    // 토큰
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "TOKEN4001", "유효하지 않은 토큰입니다."),
     ;
 
     private final HttpStatus httpStatus;
