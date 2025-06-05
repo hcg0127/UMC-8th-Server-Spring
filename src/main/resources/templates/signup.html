@@ -1,4 +1,4 @@
-<!DOCTYPE html>Add commentMore actions
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>회원가입</title>
@@ -10,7 +10,6 @@
 <h2>회원가입</h2>
 <form th:action="@{/members/signup}" th:object="${memberJoinDto}" method="post">
     <div th:if="${error}" th:text="${error}" style="color: red;"></div>
-
     <div>
         <label for="name">이름:</label>
         <input type="text" id="name" th:field="*{name}" required>
@@ -30,6 +29,10 @@
             <option value="2">여성</option>
             <option value="3">선택안함</option>
         </select>
+    </div>
+    <div>
+        <label for="phone">휴대폰번호:</label>
+        <input id="phone" th:field="*{phoneNumber}" required>
     </div>
     <div>
         <label for="birthYear">출생년도:</label>
@@ -53,10 +56,10 @@
     </div>
     <div>
         <label>선호 카테고리:</label>
-        <div class="preferCategory">
-            <label><input type="checkbox" name="preferCategory" value="1"> 한식</label>
-            <label><input type="checkbox" name="preferCategory" value="2"> 중식</label>
-            <label><input type="checkbox" name="preferCategory" value="3"> 일식</label>
+        <div class="foodList">
+            <label><input type="checkbox" name="foodList" value="1"> 한식</label>
+            <label><input type="checkbox" name="foodList" value="2"> 중식</label>
+            <label><input type="checkbox" name="foodList" value="3"> 일식</label>
         </div>
     </div>
     <div>
