@@ -19,10 +19,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         Member member = memberRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 이메일을 가진 유저가 없습니다."));
 
-        return org.springframework.security.core.userdetails.User
-                .withUsername(member.getEmail())
-                .password(member.getPassword())
-                .roles(member.getRole().name())
-                .build();
+        return new CustomUserDetails(member.getId(), member.getEmail(), member.getPassword(), member.getRole());
     }
 }

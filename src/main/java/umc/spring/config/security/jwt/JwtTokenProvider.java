@@ -10,12 +10,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import umc.spring.apiPayload.code.status.ErrorStatus;
 import umc.spring.apiPayload.exception.handler.TempHandler;
 import umc.spring.config.properties.Constants;
 import umc.spring.config.properties.JwtProperties;
+import umc.spring.config.security.CustomUserDetails;
+import umc.spring.config.security.CustomUserDetailsService;
 
 import java.security.Key;
 import java.util.Collections;
@@ -26,19 +29,34 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private final JwtProperties jwtProperties;
+    private final CustomUserDetailsService userDetailsService;
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes());
     }
 
-    public String generateToken(Authentication authentication) {
+    public String generateAccessToken(Authentication authentication) {
+        Long memberId = ((CustomUserDetails) authentication.getPrincipal()).getId();
         String email = authentication.getName();
 
         return Jwts.builder()
-                .setSubject(email)
+                .setSubject(String.valueOf(memberId))
+                .claim("email", email)
                 .claim("role", authentication.getAuthorities().iterator().next().getAuthority())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 14400000L))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getExpiration().getAccess()))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateRefreshToken(Authentication authentication) {
+        Long memberId = ((CustomUserDetails) authentication.getPrincipal()).getId();
+
+        return Jwts.builder()
+                .setSubject(String.valueOf(memberId))
+                .claim("role", authentication.getAuthorities().iterator().next().getAuthority())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getExpiration().getRefresh()))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -62,10 +80,9 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
 
-        String email = claims.getSubject();
-        String role = claims.get("role", String.class);
+        String email = claims.get("email", String.class);
 
-        User principal = new User(email, "", Collections.singleton(() -> role));
+        UserDetails principal = userDetailsService.loadUserByUsername(email);
         return new UsernamePasswordAuthenticationToken(principal, token, principal.getAuthorities());
     }
 
