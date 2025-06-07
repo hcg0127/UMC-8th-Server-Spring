@@ -1,9 +1,6 @@
 package umc.spring.config.security.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +18,6 @@ import umc.spring.config.security.CustomUserDetails;
 import umc.spring.config.security.CustomUserDetailsService;
 
 import java.security.Key;
-import java.util.Collections;
 import java.util.Date;
 
 @Component
@@ -59,6 +55,19 @@ public class JwtTokenProvider {
                 .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getExpiration().getRefresh()))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public Long getExpiration(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return claims.getExpiration().getTime();
+        } catch (JwtException | IllegalArgumentException e) {
+            return null;
+        }
     }
 
     public boolean validateToken(String token) {

@@ -24,6 +24,7 @@ import umc.spring.repository.foodRepository.FoodRepository;
 import umc.spring.repository.memberMissionRepository.MemberMissionRepository;
 import umc.spring.repository.memberRepository.MemberRepository;
 import umc.spring.repository.missionRepository.MissionRepository;
+import umc.spring.repository.redisRepository.RefreshTokenRepository;
 import umc.spring.web.dto.MemberRequestDTO;
 import umc.spring.web.dto.MemberResponseDTO;
 
@@ -47,6 +48,8 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     private final PasswordEncoder passwordEncoder;
 
     private final JwtTokenProvider jwtTokenProvider;
+
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     @Transactional
@@ -114,6 +117,8 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         String accessToken = jwtTokenProvider.generateAccessToken(authentication);
         String refreshToken = jwtTokenProvider.generateRefreshToken(authentication);
+
+        refreshTokenRepository.saveRefreshToken(member.getId(), refreshToken);
 
         return MemberConverter.toLoginResultDTO(member.getId(), accessToken, refreshToken);
     }
