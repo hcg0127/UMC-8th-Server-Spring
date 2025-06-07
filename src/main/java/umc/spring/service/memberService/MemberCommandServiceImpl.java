@@ -133,6 +133,8 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
         Long memberId = ((CustomUserDetails) authentication.getPrincipal()).getId();
 
+        if (!refreshTokenRepository.findRefreshToken(memberId))
+            throw new TempHandler(ErrorStatus.REFRESH_TOKEN_NOT_FOUND);
         refreshTokenRepository.getRefreshToken(memberId);
         refreshTokenRepository.deleteRefreshToken(memberId);
 

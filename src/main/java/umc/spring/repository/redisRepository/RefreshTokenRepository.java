@@ -27,11 +27,13 @@ public class RefreshTokenRepository {
         redisTemplate.opsForValue().set(key, refreshToken, Duration.ofMillis(durationMillis));
     }
 
+    public boolean findRefreshToken(Long memberId) {
+        String key = REFRESH_TOKEN_PREFIX + memberId;
+        return redisTemplate.hasKey(key);
+    }
+
     public String getRefreshToken(Long memberId) {
         String key = REFRESH_TOKEN_PREFIX + memberId;
-        if (!redisTemplate.hasKey(key)) {
-            throw new TempHandler(ErrorStatus.REFRESH_TOKEN_NOT_FOUND);
-        }
         return redisTemplate.opsForValue().get(key);
     }
 

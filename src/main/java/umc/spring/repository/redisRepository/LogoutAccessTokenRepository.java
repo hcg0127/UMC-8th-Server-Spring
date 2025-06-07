@@ -17,24 +17,26 @@ public class LogoutAccessTokenRepository {
 
     private static final String LOGOUT_ACCESS_TOKEN_PREFIX = "Logout";
 
-    public void saveLogoutAccessToken(Long memebrId, String accessToken) {
+    public void saveLogoutAccessToken(Long memberId, String accessToken) {
         long expirationMillis = jwtTokenProvider.getExpiration(accessToken);
         long nowMillis = System.currentTimeMillis();
         long durationMillis = expirationMillis - nowMillis;
-        String key = LOGOUT_ACCESS_TOKEN_PREFIX + memebrId;
+        String key = LOGOUT_ACCESS_TOKEN_PREFIX + memberId;
         redisTemplate.opsForValue().set(key, accessToken, durationMillis);
     }
 
-    public String getLogoutAccessToken(Long memebrId) {
-        String key = LOGOUT_ACCESS_TOKEN_PREFIX + memebrId;
-        if (!redisTemplate.hasKey(key)) {
-            throw new TempHandler(ErrorStatus.LOGOUT_ACCESS_TOKEN_NOT_FOUND);
-        }
+    public boolean findLogoutAccessToken(Long memberId) {
+        String key = LOGOUT_ACCESS_TOKEN_PREFIX + memberId;
+        return redisTemplate.hasKey(key);
+    }
+
+    public String getLogoutAccessToken(Long memberId) {
+        String key = LOGOUT_ACCESS_TOKEN_PREFIX + memberId;
         return redisTemplate.opsForValue().get(key);
     }
 
-    public void deleteLogoutAccessToken(Long memebrId) {
-        String key = LOGOUT_ACCESS_TOKEN_PREFIX + memebrId;
+    public void deleteLogoutAccessToken(Long memberId) {
+        String key = LOGOUT_ACCESS_TOKEN_PREFIX + memberId;
         redisTemplate.delete(key);
     }
 }
