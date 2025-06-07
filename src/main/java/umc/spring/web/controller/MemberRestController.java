@@ -11,7 +11,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import umc.spring.apiPayload.ApiResponse;
 import umc.spring.converter.MemberConverter;
@@ -106,8 +108,12 @@ public class MemberRestController {
 
     @PostMapping("/login")
     @Operation(summary = "유저 로그인 API", description = "유저가 로그인하는 API입니다.")
-    public ApiResponse<MemberResponseDTO.LoginResultDTO> login(@RequestBody @Valid MemberRequestDTO.LoginRequestDTO request) {
-        return ApiResponse.onSuccess(memberCommandService.loginMember(request));
+    public ResponseEntity<ApiResponse<Object>> login(@RequestBody @Valid MemberRequestDTO.LoginRequestDTO request) {
+        MemberResponseDTO.LoginResultDTO result = memberCommandService.loginMember(request);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + result.getAccessToken());
+        headers.set("Refresh-Token", result.getRefreshToken());
+        return ResponseEntity.ok().headers(headers).body(null);
     }
 
     @GetMapping("/info")
