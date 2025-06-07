@@ -11,7 +11,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import umc.spring.apiPayload.ApiResponse;
 import umc.spring.converter.MemberConverter;
@@ -106,8 +109,29 @@ public class MemberRestController {
 
     @PostMapping("/login")
     @Operation(summary = "유저 로그인 API", description = "유저가 로그인하는 API입니다.")
-    public ApiResponse<MemberResponseDTO.LoginResultDTO> login(@RequestBody @Valid MemberRequestDTO.LoginRequestDTO request) {
-        return ApiResponse.onSuccess(memberCommandService.loginMember(request));
+    public ResponseEntity<ApiResponse<Object>> login(@RequestBody @Valid MemberRequestDTO.LoginRequestDTO request) {
+        MemberResponseDTO.LoginResultDTO result = memberCommandService.loginMember(request);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + result.getAccessToken());
+        headers.set("Refresh-Token", result.getRefreshToken());
+        return ResponseEntity.ok().headers(headers).body(null);
+    }
+
+    @PostMapping("/reissue")
+    @Operation(summary = "토큰 재발급 API", description = "리프레시 토큰으로 액세스 토큰과 리프레시 토큰을 재발급하는 API입니다.")
+    public ResponseEntity<ApiResponse<?>> reissue(@RequestHeader("Refresh-Token") String refreshToken) {
+        MemberResponseDTO.LoginResultDTO result = memberCommandService.reissue(refreshToken);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + result.getAccessToken());
+        headers.set("Refresh-Token", result.getRefreshToken());
+        return ResponseEntity.ok().headers(headers).body(null);
+    }
+
+    @PostMapping("/logout")
+    @Operation(summary = "유저 로그아웃 API", description = "유저가 로그아웃하는 API입니다.")
+    public ApiResponse<?> logout(HttpServletRequest request) {
+        memberCommandService.logout(request);
+        return ApiResponse.onSuccess(HttpStatus.OK.toString());
     }
 
     @GetMapping("/info")

@@ -7,15 +7,21 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import umc.spring.config.security.CustomUserDetails;
+import umc.spring.repository.redisRepository.LogoutAccessTokenRepository;
 
 import java.io.IOException;
 
+@Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+
+    private final LogoutAccessTokenRepository logoutAccessTokenRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -27,7 +33,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
             Authentication auth = jwtTokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(auth);
+            Long memberId = ((CustomUserDetails) auth.getPrincipal()).getId();
+            if (!logoutAccessTokenRepository.findLogoutAccessToken(memberId))
+                SecurityContextHolder.getContext().setAuthentication(auth);
         }
         filterChain.doFilter(request, response);
     }

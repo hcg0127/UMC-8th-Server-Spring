@@ -39,10 +39,11 @@ public class MemberConverter {
                 .build();
     }
 
-    public static MemberResponseDTO.LoginResultDTO toLoginResultDTO(Long id, String accessToken) {
+    public static MemberResponseDTO.LoginResultDTO toLoginResultDTO(Long id, String accessToken, String refreshToken) {
         return MemberResponseDTO.LoginResultDTO.builder()
                 .memberId(id)
                 .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 

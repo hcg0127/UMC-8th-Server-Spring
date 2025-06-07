@@ -17,11 +17,16 @@ spring:
         hbm2ddl:
           auto: update
         default_batch_fetch_size: 1000
-  jwt:
-    token:
-      secretKey: umceightfightingjwttokenauthentication
+  data:
+    redis:
+      host: localhost
+      port: 6379
+jwt:
+  token:
+    secretKey: umceightfightingjwttokenauthentication
     expiration:
       access: 14400000
+      refresh: 1209600000
 logging:
   level:
     org.hibernate.type: trace
