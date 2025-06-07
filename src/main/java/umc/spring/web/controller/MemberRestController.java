@@ -127,6 +127,13 @@ public class MemberRestController {
         return ResponseEntity.ok().headers(headers).body(null);
     }
 
+    @PostMapping("/logout")
+    @Operation(summary = "유저 로그아웃 API", description = "유저가 로그아웃하는 API입니다.")
+    public ApiResponse<?> logout(HttpServletRequest request) {
+        memberCommandService.logout(request);
+        return ApiResponse.onSuccess(HttpStatus.OK.toString());
+    }
+
     @GetMapping("/info")
     @Operation(summary = "유저 내 정보 조회 API - 인증 필요",
             description = "유저가 내 정보를 조회하는 API입니다.",

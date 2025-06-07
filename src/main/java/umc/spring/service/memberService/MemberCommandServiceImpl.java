@@ -1,5 +1,6 @@
 package umc.spring.service.memberService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,6 +25,7 @@ import umc.spring.repository.foodRepository.FoodRepository;
 import umc.spring.repository.memberMissionRepository.MemberMissionRepository;
 import umc.spring.repository.memberRepository.MemberRepository;
 import umc.spring.repository.missionRepository.MissionRepository;
+import umc.spring.repository.redisRepository.LogoutAccessTokenRepository;
 import umc.spring.repository.redisRepository.RefreshTokenRepository;
 import umc.spring.web.dto.MemberRequestDTO;
 import umc.spring.web.dto.MemberResponseDTO;
@@ -50,6 +52,8 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     private final JwtTokenProvider jwtTokenProvider;
 
     private final RefreshTokenRepository refreshTokenRepository;
+
+    private final LogoutAccessTokenRepository logoutAccessTokenRepository;
 
     @Override
     @Transactional
@@ -128,8 +132,6 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         jwtTokenProvider.validateToken(refreshToken);
         Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
         Long memberId = ((CustomUserDetails) authentication.getPrincipal()).getId();
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new TempHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         refreshTokenRepository.getRefreshToken(memberId);
         refreshTokenRepository.deleteRefreshToken(memberId);
@@ -137,8 +139,21 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
         String newRefreshToken = jwtTokenProvider.generateRefreshToken(authentication);
 
-        refreshTokenRepository.saveRefreshToken(member.getId(), newRefreshToken);
+        refreshTokenRepository.saveRefreshToken(memberId, newRefreshToken);
 
-        return MemberConverter.toLoginResultDTO(member.getId(), newAccessToken, newRefreshToken);
+        return MemberConverter.toLoginResultDTO(memberId, newAccessToken, newRefreshToken);
+    }
+
+    @Override
+    public void logout(HttpServletRequest request) {
+        String accessToken = JwtTokenProvider.resolveToken(request);
+        jwtTokenProvider.validateToken(accessToken);
+        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+        Long memberId = ((CustomUserDetails) authentication.getPrincipal()).getId();
+
+        logoutAccessTokenRepository.saveLogoutAccessToken(memberId, accessToken);
+
+        refreshTokenRepository.getRefreshToken(memberId);
+        refreshTokenRepository.deleteRefreshToken(memberId);
     }
 }
