@@ -57,7 +57,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public Long getExpiration(String token) {
+    public long getExpiration(String token) {
         try {
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(getSigningKey())
@@ -65,8 +65,10 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token)
                     .getBody();
             return claims.getExpiration().getTime();
+        } catch (ExpiredJwtException e) {
+            throw new TempHandler(ErrorStatus.EXPIRED_TOKEN);
         } catch (JwtException | IllegalArgumentException e) {
-            return null;
+            throw new TempHandler(ErrorStatus.INVALID_TOKEN);
         }
     }
 
@@ -77,8 +79,10 @@ public class JwtTokenProvider {
                     .build()
                     .parseClaimsJws(token);
             return true;
+        } catch (ExpiredJwtException e) {
+            throw new TempHandler(ErrorStatus.EXPIRED_TOKEN);
         } catch (JwtException | IllegalArgumentException e) {
-            return false;
+            throw new TempHandler(ErrorStatus.INVALID_TOKEN);
         }
     }
 
@@ -89,9 +93,9 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
 
-        String email = claims.get("email", String.class);
+        String memberId = claims.getSubject();
 
-        UserDetails principal = userDetailsService.loadUserByUsername(email);
+        UserDetails principal = userDetailsService.loadUserByUsername(memberId);
         return new UsernamePasswordAuthenticationToken(principal, token, principal.getAuthorities());
     }
 

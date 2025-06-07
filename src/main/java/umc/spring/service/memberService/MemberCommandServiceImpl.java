@@ -122,4 +122,23 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         return MemberConverter.toLoginResultDTO(member.getId(), accessToken, refreshToken);
     }
+
+    @Override
+    public MemberResponseDTO.LoginResultDTO reissue(String refreshToken) {
+        jwtTokenProvider.validateToken(refreshToken);
+        Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
+        Long memberId = ((CustomUserDetails) authentication.getPrincipal()).getId();
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new TempHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        refreshTokenRepository.getRefreshToken(memberId);
+        refreshTokenRepository.deleteRefreshToken(memberId);
+
+        String newAccessToken = jwtTokenProvider.generateAccessToken(authentication);
+        String newRefreshToken = jwtTokenProvider.generateRefreshToken(authentication);
+
+        refreshTokenRepository.saveRefreshToken(member.getId(), newRefreshToken);
+
+        return MemberConverter.toLoginResultDTO(member.getId(), newAccessToken, newRefreshToken);
+    }
 }

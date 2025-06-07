@@ -13,4 +13,6 @@ public interface MemberCommandService {
     void completeMission(Long memberId, Long missionId);
 
     MemberResponseDTO.LoginResultDTO loginMember(MemberRequestDTO.LoginRequestDTO request);
+
+    MemberResponseDTO.LoginResultDTO reissue(String refreshToken);
 }

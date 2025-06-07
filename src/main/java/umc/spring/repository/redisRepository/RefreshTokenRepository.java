@@ -20,10 +20,7 @@ public class RefreshTokenRepository {
     private static final String REFRESH_TOKEN_PREFIX = "RT:";
 
     public void saveRefreshToken(Long memberId, String refreshToken) {
-        Long expirationMillis = jwtTokenProvider.getExpiration(refreshToken);
-        if (expirationMillis == null) {
-            throw new TempHandler(ErrorStatus.INVALID_TOKEN);
-        }
+        long expirationMillis = jwtTokenProvider.getExpiration(refreshToken);
         long nowMillis = System.currentTimeMillis();
         long durationMillis = expirationMillis - nowMillis;
         String key = REFRESH_TOKEN_PREFIX + memberId;
@@ -32,6 +29,9 @@ public class RefreshTokenRepository {
 
     public String getRefreshToken(Long memberId) {
         String key = REFRESH_TOKEN_PREFIX + memberId;
+        if (!redisTemplate.hasKey(key)) {
+            throw new TempHandler(ErrorStatus.REFRESH_TOKEN_NOT_FOUND);
+        }
         return redisTemplate.opsForValue().get(key);
     }
 

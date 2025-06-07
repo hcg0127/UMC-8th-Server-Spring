@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import umc.spring.apiPayload.ApiResponse;
 import umc.spring.converter.MemberConverter;
@@ -110,6 +111,16 @@ public class MemberRestController {
     @Operation(summary = "유저 로그인 API", description = "유저가 로그인하는 API입니다.")
     public ResponseEntity<ApiResponse<Object>> login(@RequestBody @Valid MemberRequestDTO.LoginRequestDTO request) {
         MemberResponseDTO.LoginResultDTO result = memberCommandService.loginMember(request);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + result.getAccessToken());
+        headers.set("Refresh-Token", result.getRefreshToken());
+        return ResponseEntity.ok().headers(headers).body(null);
+    }
+
+    @PostMapping("/reissue")
+    @Operation(summary = "토큰 재발급 API", description = "리프레시 토큰으로 액세스 토큰과 리프레시 토큰을 재발급하는 API입니다.")
+    public ResponseEntity<ApiResponse<?>> reissue(@RequestHeader("Refresh-Token") String refreshToken) {
+        MemberResponseDTO.LoginResultDTO result = memberCommandService.reissue(refreshToken);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + result.getAccessToken());
         headers.set("Refresh-Token", result.getRefreshToken());
