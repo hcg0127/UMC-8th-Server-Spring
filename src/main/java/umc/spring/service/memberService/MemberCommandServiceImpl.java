@@ -12,6 +12,7 @@ import umc.spring.apiPayload.code.status.ErrorStatus;
 import umc.spring.apiPayload.exception.handler.FoodHandler;
 import umc.spring.apiPayload.exception.handler.TempHandler;
 import umc.spring.config.security.CustomUserDetails;
+import umc.spring.config.security.CustomUserDetailsService;
 import umc.spring.config.security.jwt.JwtTokenProvider;
 import umc.spring.converter.FoodCategoryConverter;
 import umc.spring.converter.MemberConverter;
@@ -54,6 +55,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     private final LogoutAccessTokenRepository logoutAccessTokenRepository;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Override
     @Transactional
@@ -113,7 +115,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
             throw new TempHandler(ErrorStatus.INVALID_PASSWORD);
         }
 
-        UserDetails userDetails = new CustomUserDetails(member.getId(), member.getEmail(), member.getPassword(), member.getRole());
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(String.valueOf(member.getId()));
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 userDetails, null,
                 Collections.singleton(() -> member.getRole().name())
