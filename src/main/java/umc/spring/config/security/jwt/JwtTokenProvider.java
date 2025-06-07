@@ -2,6 +2,7 @@ package umc.spring.config.security.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -58,18 +59,13 @@ public class JwtTokenProvider {
     }
 
     public long getExpiration(String token) {
-        try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-            return claims.getExpiration().getTime();
-        } catch (ExpiredJwtException e) {
-            throw new TempHandler(ErrorStatus.EXPIRED_TOKEN);
-        } catch (JwtException | IllegalArgumentException e) {
-            throw new TempHandler(ErrorStatus.INVALID_TOKEN);
-        }
+        validateToken(token);
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getExpiration().getTime();
     }
 
     public boolean validateToken(String token) {
@@ -81,12 +77,22 @@ public class JwtTokenProvider {
             return true;
         } catch (ExpiredJwtException e) {
             throw new TempHandler(ErrorStatus.EXPIRED_TOKEN);
-        } catch (JwtException | IllegalArgumentException e) {
+        } catch (MalformedJwtException e) {
+            throw new TempHandler(ErrorStatus.MALFORMED_TOKEN);
+        } catch (UnsupportedJwtException e) {
+            throw new TempHandler(ErrorStatus.UNSUPPORTED_TOKEN);
+        } catch (SignatureException e) {
+            throw new TempHandler(ErrorStatus.INVALID_SIGNATURE);
+        } catch (IllegalArgumentException e) {
+            throw new TempHandler(ErrorStatus.TOKEN_NOT_FOUND);
+        } catch (JwtException e) {
             throw new TempHandler(ErrorStatus.INVALID_TOKEN);
         }
     }
 
     public Authentication getAuthentication(String token) {
+        validateToken(token);
+
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()

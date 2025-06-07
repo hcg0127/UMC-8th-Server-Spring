@@ -14,7 +14,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import umc.spring.config.security.jwt.JwtAccessDeniedHandler;
+import umc.spring.config.security.jwt.JwtAuthenticationEntryPoint;
 import umc.spring.config.security.jwt.JwtAuthenticationFilter;
+import umc.spring.config.security.jwt.JwtExceptionHandlerFilter;
 
 import java.util.List;
 
@@ -24,6 +27,9 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtExceptionHandlerFilter jwtExceptionHandlerFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -33,12 +39,16 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/", "/members/join", "/members/login", "/members/reissue", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/members/info").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .exceptionHandling((exception) -> exception
+                        .accessDeniedHandler(jwtAccessDeniedHandler)
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionHandlerFilter, JwtAuthenticationFilter.class);
 
         return http.build();
     }

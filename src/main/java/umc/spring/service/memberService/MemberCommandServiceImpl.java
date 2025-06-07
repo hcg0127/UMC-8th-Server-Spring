@@ -55,6 +55,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     private final LogoutAccessTokenRepository logoutAccessTokenRepository;
+
     private final CustomUserDetailsService customUserDetailsService;
 
     @Override
@@ -120,6 +121,10 @@ public class MemberCommandServiceImpl implements MemberCommandService {
                 userDetails, null,
                 Collections.singleton(() -> member.getRole().name())
         );
+
+        if (logoutAccessTokenRepository.findLogoutAccessToken(member.getId())) {
+            logoutAccessTokenRepository.deleteLogoutAccessToken(member.getId());
+        }
 
         String accessToken = jwtTokenProvider.generateAccessToken(authentication);
         String refreshToken = jwtTokenProvider.generateRefreshToken(authentication);
