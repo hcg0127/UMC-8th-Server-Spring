@@ -39,7 +39,7 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/", "/members/join", "/members/login", "/members/reissue", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/members/info").hasRole("ADMIN")
+                        .requestMatchers("/members/info").hasRole("USER")
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
@@ -60,7 +60,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of("*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Refresh-Token", "Content-Type"));
-        config.setAllowCredentials(true);
+        config.setAllowCredentials(false);
         config.setExposedHeaders(List.of("Authorization", "Refresh-Token", "Content-Type"));
         config.setMaxAge(3600L);
 
