@@ -21,6 +21,9 @@
 <p th:if="${param.logout}">로그아웃되었습니다.</p>
 
 <!-- 회원가입 링크 수정 -->
-<p>계정이 없나요? <a th:href="@{/signup}">Sign up</a></p>Add commentMore actions
+<p>계정이 없나요? <a th:href="@{/signup}">Sign up</a></p>
+<p>소셜 로그인 <a th:href="@{/oauth2/authorization/kakao}">
+    <img th:src="@{/images/oauth/kakao_login_medium_narrow.png}" alt="">
+</a></p>
 </body>
 </html>

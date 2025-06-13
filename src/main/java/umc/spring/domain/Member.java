@@ -71,7 +71,7 @@ public class Member extends BaseEntity {
 
     // Social 다중 선택 가능 ?
     @Enumerated(EnumType.STRING)
-//    @Column(nullable = false, columnDefinition = "VARCHAR(15)")
+    @Column(nullable = false, columnDefinition = "VARCHAR(15) DEFAULT 'LOCAL'")
     private Social social;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)

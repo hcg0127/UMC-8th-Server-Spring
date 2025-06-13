@@ -136,7 +136,6 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
     @Override
     public MemberResponseDTO.LoginResultDTO reissue(String refreshToken) {
-        jwtTokenProvider.validateToken(refreshToken);
         Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
         Long memberId = ((CustomUserDetails) authentication.getPrincipal()).getId();
 
@@ -156,7 +155,6 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     @Override
     public void logout(HttpServletRequest request) {
         String accessToken = JwtTokenProvider.resolveToken(request);
-        jwtTokenProvider.validateToken(accessToken);
         Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
         Long memberId = ((CustomUserDetails) authentication.getPrincipal()).getId();
 
