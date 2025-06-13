@@ -18,11 +18,8 @@ import umc.spring.config.security.jwt.JwtAccessDeniedHandler;
 import umc.spring.config.security.jwt.JwtAuthenticationEntryPoint;
 import umc.spring.config.security.jwt.JwtAuthenticationFilter;
 import umc.spring.config.security.jwt.JwtExceptionHandlerFilter;
-import umc.spring.config.security.oauth.KakaoOAuth2UserService;
 
 import java.util.List;
-
-import static org.springframework.security.config.Customizer.withDefaults;
 
 @EnableWebSecurity
 @Configuration
@@ -33,7 +30,6 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtExceptionHandlerFilter jwtExceptionHandlerFilter;
-    private final KakaoOAuth2UserService kakaoOAuth2UserService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -45,11 +41,6 @@ public class SecurityConfig {
                         .requestMatchers("/", "/members/join", "/members/login", "/members/reissue", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/members/info").hasRole("USER")
                         .anyRequest().permitAll())
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/login")
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(kakaoOAuth2UserService)))
-                .logout(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)

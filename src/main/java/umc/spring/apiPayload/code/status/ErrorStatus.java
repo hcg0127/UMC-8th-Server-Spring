@@ -54,6 +54,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // OAUTH
     UNSUPPORTED_SOCAIL(HttpStatus.BAD_REQUEST, "OAUTH4001", "지원하지 않는 소셜 로그인 방식입니다."),
+    PARSE_ERROR(HttpStatus.BAD_REQUEST, "OAUTH4002", "파싱 중 오류가 생겼습니다."),
     ;
 
     private final HttpStatus httpStatus;
