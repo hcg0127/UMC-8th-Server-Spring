@@ -38,9 +38,9 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/members/join", "/members/login", "/members/reissue", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/", "/members/join", "/members/login", "/members/reissue", "/swagger-ui/**", "/v3/api-docs/**", "/login/oauth2/**").permitAll()
                         .requestMatchers("/members/info").hasRole("USER")
-                        .anyRequest().permitAll())
+                        .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
